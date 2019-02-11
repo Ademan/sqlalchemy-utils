@@ -27,9 +27,15 @@ class DropView(DDLElement):
 
 @compiler.compiles(DropView)
 def compile_drop_materialized_view(element, compiler, **kw):
-    return 'DROP {}VIEW IF EXISTS {} CASCADE'.format(
+    if compiler.dialect.name == 'sqlite':
+        cascade = ''
+    else:
+        cascade = ' CASCADE'
+
+    return 'DROP {}VIEW IF EXISTS {}{}'.format(
         'MATERIALIZED ' if element.materialized else '',
-        element.name
+        element.name,
+        cascade
     )
 
 
